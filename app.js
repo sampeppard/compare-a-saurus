@@ -11,7 +11,6 @@ function LifeForm(species, weight, height, diet, location, period, facts) {
 }
 
 // Create Dino Compare Method 1
-// NOTE: Weight in JSON file is in lbs, height in inches.
 LifeForm.prototype.compareWeight = (dino, human) => {
     if (dino.weight > human.weight) {
         return `The ${dino.species} is heavier than ${human.name}`
@@ -23,7 +22,6 @@ LifeForm.prototype.compareWeight = (dino, human) => {
 }
 
 // Create Dino Compare Method 2
-// NOTE: Weight in JSON file is in lbs, height in inches.
 LifeForm.prototype.compareHeight = (dino, human) => {
     if (dino.height > human.height) {
         return `The ${dino.species} is taller than ${human.name}`
@@ -35,7 +33,6 @@ LifeForm.prototype.compareHeight = (dino, human) => {
 }
 
 // Create Dino Compare Method 3
-// NOTE: Weight in JSON file is in lbs, height in inches.
 LifeForm.prototype.compareDiet = (dino, human) => {
     if (dino.diet === human.diet) {
         return `A ${dino.species} has the same diet as ${human.name}`
@@ -44,6 +41,7 @@ LifeForm.prototype.compareDiet = (dino, human) => {
     }
 }
 
+// Method to create extra facts
 LifeForm.prototype.createFacts = (lifeform) => {
     return {
         periodFact: `The ${lifeform.species} lived in the ${lifeform.when} period`,
@@ -60,6 +58,7 @@ Dinosaur.prototype.constructor = Dinosaur;
 // Create Human Object
 const Human = new LifeForm('human');
 
+// Consume form info and create instance
 function handleForm() {
     const name = document.getElementById('name').value;
     const heightInFeet = document.getElementById('feet').value;
@@ -68,14 +67,20 @@ function handleForm() {
     const diet = document.getElementById('diet').value;
     const form = document.getElementById('dino-compare');
     const grid = document.getElementById('grid');
+    const validation = document.getElementById('validation');
+    const backNav = document.getElementById('back-nav');
 
     const values = [name, heightInFeet, heightInches, weight, diet];
 
     if (values.includes('')) {
-        return 'Please ensure all fields are filled out ;)'
+        validation.style.display = 'block';
+        validation.innerText = 'Please ensure all fields are filled out ;)';
+        return;
     } else {
         form.style.display = 'none';
+        validation.style.display = 'none';
         grid.style.display = 'flex';
+        backNav.style.display = 'block';
     }
 
     Human.name = name;
@@ -84,6 +89,28 @@ function handleForm() {
     Human.diet = diet;
 
     return values;
+}
+
+clearFormAndGrid = () => {
+    document.getElementById('name').value = '';
+    document.getElementById('feet').value = '';
+    document.getElementById('inches').value = '';
+    document.getElementById('weight').value = '';
+    document.getElementById('grid').innerHTML = '';
+}
+
+handleBackNav = () => {
+    const grid = document.getElementById('grid');
+    const validation = document.getElementById('validation');
+    const backNav = document.getElementById('back-nav');
+    const form = document.getElementById('dino-compare');
+
+    grid.style.display = 'none';
+    form.style.display = 'block';
+    backNav.style.display = 'none';
+    validation.style.display = 'none';
+
+    clearFormAndGrid();
 }
 
 // Add tiles to DOM
@@ -108,6 +135,9 @@ populateGrid = (lifeform) => {
         </div>`;
 
     gridList.insertAdjacentHTML('beforeend', tileContent);
+    document.getElementById('back-nav').addEventListener('click', (event) => {
+        handleBackNav();
+    });
 };
 
 function shuffle(array) {
@@ -167,12 +197,11 @@ function createDinos() {
     });
 }
 
-// On button click, prepare and display infographic
+// On button click, prepare and display infographic in IIFE
 (function () {
     document.getElementById('btn').addEventListener('click', (event) => {
         event.preventDefault();
-
-        const humanStats = handleForm();
+        handleForm();
 
         createDinos();
     });
